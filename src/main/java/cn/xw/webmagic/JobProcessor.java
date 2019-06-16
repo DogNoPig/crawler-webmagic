@@ -6,6 +6,9 @@ import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.pipeline.FilePipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
+import us.codecraft.webmagic.scheduler.BloomFilterDuplicateRemover;
+import us.codecraft.webmagic.scheduler.QueueScheduler;
+import us.codecraft.webmagic.scheduler.Scheduler;
 
 /**
  * @author xw
@@ -29,13 +32,17 @@ public class JobProcessor implements PageProcessor {
         page.putField("div4",page.getHtml().css("div.imgtextlist2 dl").regex(".*军运.*").toString());
 
         //获取链接
-        page.addTargetRequests(page.getHtml().css("div.imgtextlist2 dl dt").links().all());
+        //page.addTargetRequests(page.getHtml().css("div.imgtextlist2 dl dt").links().all());
         //以获取到的链接的页面作为解析页面进行再一次解析
-        page.putField("url",page.getHtml().css("div.videodetail h4").all());
+        //page.putField("url",page.getHtml().css("div.videodetail h4").all());
+
+        page.addTargetRequest("http://wuhan.yiwuzhishu.cn/column/SY");
+        page.addTargetRequest("http://wuhan.yiwuzhishu.cn/column/SY");
+        page.addTargetRequest("http://wuhan.yiwuzhishu.cn/column/SY");
     }
 
     private Site site = Site.me()
-            .setTimeOut(1000) //设置超时时间
+            .setTimeOut(100000) //设置超时时间
             .setRetrySleepTime(10*1000) //设置重试间隔时间
             .setRetryTimes(3)  //设置重试次数
             .setCharset("utf8") //设置编码
@@ -46,10 +53,15 @@ public class JobProcessor implements PageProcessor {
 
     //主函数执行爬虫
     public static void main(String[] args) {
-        Spider.create(new JobProcessor())
+        Spider spider = Spider.create(new JobProcessor())
                 .addUrl("http://wuhan.yiwuzhishu.cn/column/SY") // 设置要爬取的链接
-                .addPipeline(new FilePipeline("D:\\IdeaProjects\\crawler-webmagic\\result")) //设置输出路径
+                //.addPipeline(new FilePipeline("D:\\IdeaProjects\\crawler-webmagic\\result")) //设置输出路径
                 .thread(5)  //设置线程数量
-                .run();
+                .setScheduler(new QueueScheduler().setDuplicateRemover(new BloomFilterDuplicateRemover(10000000))) //设置布隆去重过滤器
+                ;
+
+        Scheduler scheduler = spider.getScheduler();
+
+        spider.run();
     }
 }
