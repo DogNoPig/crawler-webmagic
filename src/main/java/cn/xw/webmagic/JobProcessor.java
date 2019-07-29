@@ -36,9 +36,9 @@ public class JobProcessor implements PageProcessor {
         //以获取到的链接的页面作为解析页面进行再一次解析
         //page.putField("url",page.getHtml().css("div.videodetail h4").all());
 
-        page.addTargetRequest("http://wuhan.yiwuzhishu.cn/column/SY");
-        page.addTargetRequest("http://wuhan.yiwuzhishu.cn/column/SY");
-        page.addTargetRequest("http://wuhan.yiwuzhishu.cn/column/SY");
+        page.addTargetRequest("http://*****");
+        page.addTargetRequest("http://*****");
+        page.addTargetRequest("http://*****");
     }
 
     private Site site = Site.me()
@@ -54,7 +54,7 @@ public class JobProcessor implements PageProcessor {
     //主函数执行爬虫
     public static void main(String[] args) {
         Spider spider = Spider.create(new JobProcessor())
-                .addUrl("http://wuhan.yiwuzhishu.cn/column/SY") // 设置要爬取的链接
+                .addUrl("http://*****") // 设置要爬取的链接
                 //.addPipeline(new FilePipeline("D:\\IdeaProjects\\crawler-webmagic\\result")) //设置输出路径
                 .thread(5)  //设置线程数量
                 .setScheduler(new QueueScheduler().setDuplicateRemover(new BloomFilterDuplicateRemover(10000000))) //设置布隆去重过滤器
